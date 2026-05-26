@@ -50,4 +50,28 @@ Feedback Loop:
 •  Standardized Interfaces: All tools implement a common ComputeBackend interface.
 •  Phased Rollout: Phase 1 (Triton + CUDA Graphs + JAX-FEM), Phase 2 (FlashAttention + cotengra + SNNs), Phase 3 (full agentic RL + Loihi).
 •  Telemetry & Monitoring: Comprehensive logging of FLOPs, memory, occupancy, energy, and end-to-end impact.
-•  Safety: Always maintain CPU fallbacks and validation guardrails.
+•  Safety: Always maintain CPU
+fallbacks and validation guardrails.
+
++ ### TensorRT-LLM Integration (High-Performance LLM Inference Backend)
++ 
++ **Description**: NVIDIA TensorRT-LLM is used as the default high-performance inference engine for all LLM-based components (synthesis, multi-agent debate, replan, agentic workflows, kernel policy generation, and analogical reasoning).
++ 
++ **Rationale**: Provides state-of-the-art quantization (FP8/INT4), in-flight batching, Paged KV Cache, speculative decoding (EAGLE), and CUDA Graph support — delivering 2-4x throughput gains with low latency.
++ 
++ **Optimal Placement & Synergies**:
++ - **Layer 1 (EM)**: Accelerates synthesis_arbos, intelligent_replan, and scientist mode (especially long-context critique and hypothesis generation).
++ - **Layer 3 (Synapse)**: Powers Meta-RL policy networks, Kernel Policy Agent, Agentic Workflow Controller, and any LLM-driven surrogate planning.
++ - **Layer 4 (Validation Oracle)**: Speeds up multi-agent debate verifiers and reasoning-based verification steps.
++ 
++ **Integration Details**:
++ - Use TensorRT-LLM Python API for model export and inference.
++ - Combine with Triton for custom fused physics kernels (TensorRT-LLM for LLM reasoning, Triton for PINO physics operations).
++ - Leverage PhysicsNeMo / JAX-FEM for hybrid physics + LLM workflows.
++ - Meta-RL learns optimal quantization levels, speculative decoding strategies, and batching policies per workload.
++ - Fallback: Standard PyTorch when TensorRT-LLM is not available or for debugging.
++ 
++ **Benefits**:
++ - Dramatically faster agentic reasoning and synthesis → richer, higher-quality fragments.
++ - Enables larger context windows and more parallel debate rounds in verification.
++ - Strong synergy with Compute Self-Optimization: TensorRT-LLM’s internal kernel optimizations complement our Triton + CUDA stack.
