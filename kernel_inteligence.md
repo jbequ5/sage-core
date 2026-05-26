@@ -1,56 +1,53 @@
-✅ Layer: Compute Self-Optimization & Kernel Intelligence — Complete Detailed Specification
-This document provides a comprehensive, rebuildable specification for kernel optimization across the entire SAGE system. It documents where and how kernel optimization is used, why it is integrated that way, and how it synergizes with surrogate/PINO work.
+This document provides the complete, final, rebuildable specification for SAGE’s Compute Self-Optimization capability. It integrates all explored tools (Triton, FlashAttention, cotengra, CUDA optimizations, ESN/LSM, SNNs + Surrogate Gradients, Loihi, Polariton concepts, PhysicsNeMo, JAX-FEM, Cadence Reality-inspired workflows, differentiable physics, and agentic kernel RL) in an optimal, synergistic, and manageable way.
 1. Vision & Philosophy
-Compute Self-Optimization (Objective 7) means SAGE continuously learns and improves its own low-level CUDA kernels, memory strategies, and hardware utilization in tight synergy with surrogate design and verification.
-The goal is a self-improving compute-surrogate loop: better kernels → faster & more accurate verification/surrogates → richer fragments → better kernel strategies.
-2. Core Design Decisions
-•  Cross-cutting concern led by Layer 3 (Synapse Meta-RL), executed in Layers 1, 2, and 4.
-•  Agentic + Surrogate-Guided: Use Meta-RL and small performance surrogates to search kernel space efficiently.
-•  Hardware-Aware: Profiles and decisions adapt to available GPUs, memory, and tensor shapes.
-•  Safety & Fallback: Always maintain CPU paths and validation guards.
-3. Integration by Layer
-Layer 1: EM (Execution)
-•  Usage: Offload PINO residual checks, hybrid tensor contractions, and validation steps to optimized kernels when GPU is available (profile-driven).
-•  Specifics:
-	•  CUDA Graphs for repetitive validation passes.
-	•  Fused FFT + spectral multiply + residual kernels (cuTensor + custom kernels).
-	•  Dynamic kernel selection from Synapse policy.
-•  Documentation Point: EM calls kernel_manager.execute_pino_verification(...) which routes to the best learned kernel.
-Layer 2: iOS (Intelligence Factory)
-•  Usage: GPU-aware swarm orchestration and profile calibration.
-•  Specifics:
-	•  Detect available GPUs and adjust batch sizes, parallel EM instances, and profile selection based on kernel performance history.
-	•  Calibration flight tests include kernel performance metrics.
-	•  Challenge pulling prioritizes GPU-friendly (PINO-heavy) challenges when optimized kernels are available.
-•  Documentation Point: orchestrator.py queries Synapse for current kernel policy before launching swarms.
-Layer 3: Synapse (Meta-RL & Distillation) — Primary Home
-•  Usage: Meta-RL policy network learns kernel optimization strategies.
-•  Specifics:
-	•  Kernel Policy Agent (agentic RL or surrogate-guided search) proposes, tests, and evolves CUDA kernel configurations.
-	•  Surrogate-Guided Search: Small performance surrogates predict kernel runtime/memory for candidate configurations, reducing real GPU evaluations.
-	•  Distillation of “kernel recipes” into specialized surrogates (e.g., “best kernel set for quantum PINO”).
-	•  Feedback: Real kernel performance + surrogate accuracy + fragment yield → Meta-RL reward.
-•  Key Algorithms:
-	•  cotengra for contraction path optimization.
-	•  CUDA Agent-style iterative evolution for custom kernels.
-	•  Differentiable kernel approximation for gradient-based tuning.
-Layer 4: Validation Oracle
-•  Usage: All physics-heavy verification uses optimized kernels.
-•  Specifics:
-	•  Hybrid PINO + Tensor Network verifier uses cuTensorNet + cotengra-optimized paths executed via CUDA Graphs.
-	•  Multi-fidelity discrepancy and Bayesian PINO use fused custom kernels.
-	•  Caching of kernel results for repeated subtask patterns.
-•  Documentation Point: Every validate() call logs kernel version and performance for Meta-RL.
-4. Synergistic Loop (The Moat)
-1.  Synapse proposes new kernel configuration.
-2.  iOS launches targeted EM swarms using the kernel.
-3.  EM + Oracle execute verification with the kernel and record performance.
-4.  Fragments + telemetry flow back to Synapse.
-5.  Meta-RL updates kernel policy and surrogate design.
-6.  Repeat — creating compounding gains in speed, accuracy, and capability.
-5. Implementation Roadmap & Documentation Points
-•  KernelManager (new cross-layer module in Synapse): Central registry and dispatcher for learned kernels.
-•  Performance Surrogate: Small model that predicts kernel metrics to accelerate search.
-•  Telemetry: All kernel runs log FLOPs, memory bandwidth, occupancy, and end-to-end time.
-•  Fallback: CPU paths always available with clear performance degradation signals.
-This specification ensures kernel optimization is systematic, documented, and synergistic with surrogate/PINO work.
+Objective 7 – Compute Self-Optimization & Hardware-Aware Intelligence
+SAGE continuously learns and improves its own low-level compute kernels, memory strategies, hardware utilization, and simulation backends in tight synergy with surrogate design, verification, and intelligence generation.
+Core Principle:
+“Better kernels and physics engines → faster, more accurate, and more scalable verification & surrogates → richer fragments → better kernels and surrogates.”
+This creates a true meta-intelligence loop that compounds across all layers.
+2. High-Level Architecture
+•  KernelManager (central module in Synapse/Layer 3): Orchestrates policies, tool selection, deployment, and telemetry.
+•  Modular Tooling: Each compute tool is a pluggable backend with standardized interfaces (execute, profile, get_metrics, optimize).
+•  Progressive Rollout: Start with Triton + CUDA Graphs, then enable advanced tools as Meta-RL validates value.
+•  Hardware-Aware Profiles: iOS and EM select optimal backends based on available hardware (GPU, multi-GPU, future Loihi).
+3. Integrated Tools & Optimal Placement
+Primary GPU Tooling Stack:
+•  Triton: Default high-productivity language for custom fused PINO kernels (FFT + spectral + residual + discrepancy).
+•  FlashAttention-3: Default for any attention-based PINTO or long-range components.
+•  cotengra + cuTensorNet: Optimal contraction paths for Hybrid PINO + Tensor Network verification and surrogate training.
+•  CUDA Graphs + Persistent Kernels: Low-overhead repetitive execution (validation, surrogate inference).
+Differentiable Physics & Simulation:
+•  JAX-FEM: Core differentiable FEM engine for adjoint methods, inverse problems, and high-fidelity residual checks.
+•  PhysicsNeMo (NVIDIA): Production-grade framework for PINO-style surrogates, multiphysics digital twins, and training pipelines.
+Temporal & Spiking Dynamics:
+•  ESN / LSM Reservoirs: MoDE specialists for temporal modeling and intuition-like capabilities.
+•  SNNs + Temporal Surrogate Gradients: Energy-efficient spiking experts for dynamical verification and fast training.
+•  Polariton-Inspired Concepts: Algorithmic inspiration for coherent, nonlinear reservoirs.
+Neuromorphic & Future Hardware:
+•  Loihi 2: Specialized backend for SNN/ESN/LSM workloads (energy-efficient temporal tasks).
+Agentic & Workflow Layer:
+•  Agentic Multiphysics Workflows: Inspired by Cadence Reality — autonomous loops combining solvers, surrogates, and verification.
+4. Synergistic Mechanisms (The Moat)
+Meta-RL Kernel & Physics Policy (Layer 3):
+•  A learned policy network proposes configurations (Triton kernels, JAX-FEM parameters, FlashAttention settings, cotengra paths, SNN surrogate gradients, etc.).
+•  Uses surrogate-guided search (small performance surrogate predicts runtime/memory/accuracy) to accelerate exploration.
+•  Reward signal = (surrogate accuracy × speed × fragment yield) + verification confidence.
+Validation Oracle Usage (Layer 4):
+•  All physics-heavy verification uses the best learned kernels and differentiable engines (JAX-FEM + PINO hybrids + cuTensorNet).
+•  Caching and CUDA Graphs for efficiency.
+EM & iOS Usage:
+•  EM: Profile-driven offload of validation and synthesis steps.
+•  iOS: GPU/Loihi-aware swarm orchestration and calibration flight tests.
+Feedback Loop:
+1.  Synapse proposes new kernel/physics configuration.
+2.  iOS launches targeted EM swarms.
+3.  EM + Oracle execute and record performance.
+4.  Fragments + telemetry flow back.
+5.  Meta-RL updates policies and surrogates.
+6.  Repeat — compounding gains.
+5. Implementation & Complexity Management
+•  KernelManager centralizes selection, deployment, telemetry, and fallback.
+•  Standardized Interfaces: All tools implement a common ComputeBackend interface.
+•  Phased Rollout: Phase 1 (Triton + CUDA Graphs + JAX-FEM), Phase 2 (FlashAttention + cotengra + SNNs), Phase 3 (full agentic RL + Loihi).
+•  Telemetry & Monitoring: Comprehensive logging of FLOPs, memory, occupancy, energy, and end-to-end impact.
+•  Safety: Always maintain CPU fallbacks and validation guardrails.
