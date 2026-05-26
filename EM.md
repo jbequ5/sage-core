@@ -62,3 +62,34 @@ def run_full_mission(self, challenge: str, verification_spec: str = "", goal_md:
         self._end_of_loop_processing(validation)
     
     self._end_of_run_debrief()
+
+4. Key Intelligence Features (Maximum Depth)
+Hierarchical Recursive Decomposition with Self-Reflection (ContractEngine)
+•  Recursively breaks down challenges, spawning sub-EM instances or sub-agents for hard subtasks.
+•  Self-reflection loop: Critiques its own decomposition using Layer 4 Oracle feedback and hybrid reasoner.
+•  Stops recursion when verification confidence is high or budget is reached.
+Hybrid Symbolic + Neural Reasoning Engine (HybridReasoner)
+•  Combines LLM debate with Marabou/LTN/SMT solvers and JAX-FEM differentiable physics.
+•  Used in contract generation, synthesis, and replan for formal guarantees + creative exploration.
+Active Learning & Uncertainty-Guided Exploration (ActiveExplorer)
+•  During replan and scientist mode, prioritizes high-uncertainty/high-value subtasks using Bayesian optimization and active inference.
+•  Feeds learning signals back to Synapse for surrogate improvement.
+Temporal & Physics-Aware Intuition Modules (IntuitionModule)
+•  Uses ESN/LSM/SNN reservoirs for temporal trajectory prediction and “gut feel” during decomposition and replan.
+•  Physics-informed intuition for dynamical systems (quantum, fluids, etc.).
+Self-Evolving Solver Capabilities
+•  Light self-evolution triggers: EM can request Synapse to evolve its own decomposition strategies, reasoning patterns, or intuition modules based on run outcomes.
+5. Integration with Other Layers
+•  Layer 2 (iOS): Receives orchestrated challenges and returns rich fragments/telemetry.
+•  Layer 3 (Synapse): Pushes fragments for Meta-RL and surrogate distillation; receives guidance, updated kernels, and oracle patterns.
+•  Layer 4 (Validation Oracle): Heavy usage for DVR, subtask validation, neuro-symbolic verification, and oracle evolution triggers.
+•  Compute Self-Optimization: Uses learned kernels (Triton, FlashAttention, cuTensorNet, etc.) for physics-heavy steps.
+6. Success Metrics
+•  ≥75% of challenges solved autonomously with ≤3 replans on novel problems.
+•  Average fragment EFS > 0.85 with rich self-reflection traces.
+•  Lightweight footprint (<650MB baseline per instance).
+•  Strong formal verification coverage via Marabou and neuro-symbolic tools.
+•  High discovery potential through hierarchical recursion and active exploration.
+7. Reflection Check
+With 7 objectives + 4 layers: EM is now elite — hierarchical, hybrid, active, intuitive, and self-evolving. It is verification-first, discovery-oriented, and perfectly positioned to generate high-quality fragments for surrogate excellence.
+End of Specification
