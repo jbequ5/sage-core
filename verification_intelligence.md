@@ -56,6 +56,28 @@ This layer eliminates noise, anchors all learning, accelerates bootstrap, and cr
 - **Foundation Models**: Zero-shot + adapter fine-tuning for new domains.
 - **PINTO (Transformer-based)**: Better long-range modeling.
 
++ ### Neuro-Symbolic Verification Integration
++ 
++ **NeuroSymbolicVerifier** (New Capability)
++ - Combines neural pattern recognition with symbolic solvers (LTN, DeepProbLog, AlphaGeometry-style loops).
++ - Used for formal verification of contracts, postconditions, and surrogate properties.
++ - Registry entry: strength=0.96, determinism_level=0.94.
++ 
++ **MarabouVerifier** (New High-Determinism Capability)
++ - SMT-based formal verification of neural networks and hybrid models.
++ - Excellent for proving robustness, safety invariants, and reachability of PINO surrogates.
++ - Registry entry: strength=0.98 for supported piecewise-linear networks, determinism_level=0.99.
++ - Used for critical subtasks and final surrogate validation.
++ 
++ **Integration in ValidationOracle**:
++ - VerificationPlanner prioritizes neuro-symbolic and Marabou when formal guarantees are needed (high-stakes or mathematical subtasks).
++ - Hybrid mode: LLM proposes candidates → Marabou / LTN verifies → feedback to synthesis loop.
+
++ ### Hybrid Neuro-Symbolic + PINO Verification
++ - Marabou for formal proof of PINO surrogate properties.
++ - Logic Tensor Networks (LTN) for fuzzy logical reasoning with uncertainty.
++ - AlphaGeometry-style iterative proposal + verification loop in HybridReasoner (Layer 1)
+
 ## 5. End-to-End Flow
 
 1. **Bootstrap**: Benchmark ingestion → synthetic generation → Oracle filtering → initial surrogate training.
